@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -22,11 +21,12 @@ import android.widget.Toast;
 import com.creaginetech.expresshoes.Common.Common;
 import com.creaginetech.expresshoes.Interface.ItemClickListener;
 import com.creaginetech.expresshoes.Model.Category;
-import com.creaginetech.expresshoes.Service.ListenOrder;
+import com.creaginetech.expresshoes.Model.Token;
 import com.creaginetech.expresshoes.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import io.paperdb.Paper;
@@ -108,9 +108,17 @@ public class HomeActivity extends AppCompatActivity
             return;
         }
 
-        //Register Service (chapter 13)
-        Intent service = new Intent(HomeActivity.this, ListenOrder.class);
-        startService(service);
+        //to add your token when login app
+        updateToken(FirebaseInstanceId.getInstance().getToken());
+
+
+    }
+
+    private void updateToken(String token) {
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        DatabaseReference tokens = db.getReference("Tokens");
+        Token data = new Token(token,false); //false because this token from client app
+        tokens.child(Common.currentUser.getPhone()).setValue(data);
     }
 
     private void loadMenu() {

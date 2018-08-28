@@ -21,8 +21,12 @@ import com.creaginetech.expresshoes.Database.Database;
 import com.creaginetech.expresshoes.Model.Order;
 import com.creaginetech.expresshoes.Model.Request;
 import com.creaginetech.expresshoes.ViewHolder.CartAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.NumberFormat;
@@ -111,11 +115,17 @@ public class CartActivity extends AppCompatActivity {
 
                 //Submit to Firebase
                 //We will using System.CurrentMilli to key
-                requests.child(String.valueOf(System.currentTimeMillis()))
+                String order_number = String.valueOf(System.currentTimeMillis());
+                requests.child(order_number)
                         .setValue(request);
                 //Delete Cart
                 new Database(getBaseContext()).cleanCart();
-                Toast.makeText(CartActivity.this, "Thank you , Order Place", Toast.LENGTH_SHORT).show();
+
+                sendNotificationOrder(order_number);
+
+
+//                Toast.makeText(CartActivity.this, "Thank you , Order Place", Toast.LENGTH_SHORT).show();
+//                finish();
             }
         });
 
@@ -127,6 +137,22 @@ public class CartActivity extends AppCompatActivity {
         });
 
         alertDialog.show();
+    }
+
+    private void sendNotificationOrder(String order_number) {
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+        Query data = tokens.orderByChild("isServerToken").equalTo(true); //get ll node with isServerToken is true
+        data.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void loadListFood() {
@@ -157,7 +183,7 @@ public class CartActivity extends AppCompatActivity {
         cart.remove(position);
         //After that, we will delete all old data from SQLite
         new Database(this).cleanCart();
-        //And final, we will update new data from List<Order> to SQLite
+        //And fin  al, we will update new data from List<Order> to SQLite
         for (Order item:cart)
             new Database(this).addToCart(item);
         //Refresh
