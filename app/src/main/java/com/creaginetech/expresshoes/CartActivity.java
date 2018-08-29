@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +19,13 @@ import android.widget.Toast;
 
 import com.creaginetech.expresshoes.Common.Common;
 import com.creaginetech.expresshoes.Database.Database;
+import com.creaginetech.expresshoes.Model.MyResponse;
+import com.creaginetech.expresshoes.Model.Notification;
 import com.creaginetech.expresshoes.Model.Order;
 import com.creaginetech.expresshoes.Model.Request;
+import com.creaginetech.expresshoes.Model.Sender;
+import com.creaginetech.expresshoes.Model.Token;
+import com.creaginetech.expresshoes.Remote.APIService;
 import com.creaginetech.expresshoes.ViewHolder.CartAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,6 +41,9 @@ import java.util.List;
 import java.util.Locale;
 
 import info.hoang8f.widget.FButton;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -51,10 +60,15 @@ public class CartActivity extends AppCompatActivity {
 
     CartAdapter adapter;
 
+    APIService mService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+
+        //Init Service
+        mService = Common.getFCMService();
 
         //Firebase
         database = FirebaseDatabase.getInstance();
@@ -139,12 +153,43 @@ public class CartActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    private void sendNotificationOrder(String order_number) {
+    private void sendNotificationOrder(final String order_number) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query data = tokens.orderByChild("isServerToken").equalTo(true); //get ll node with isServerToken is true
+        Query data = tokens.orderByChild("isServerToken").equalTo(true); //get all node with isServerToken is true
         data.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSanpshot:dataSnapshot.getChildren())
+                {
+                    Token serverToken = postSanpshot.getValue(Token.class);
+
+                    //Create raw payload to send
+                    Notification notification = new Notification("Expreshoes","You have new order "+order_number);
+                    Sender content = new Sender(serverToken.getToken(),notification);
+
+                    mService.sendNotification(content)
+                            .enqueue(new Callback<MyResponse>() {
+                                @Override
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                    if (response.body().success == 1)
+                                    {
+                                        Toast.makeText(CartActivity.this, "Thank you , Order Place", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                    else
+                                    {
+                                        Toast.makeText(CartActivity.this, "Failed !!!", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
+                                    Log.e("ERROR",t.getMessage());
+                                }
+                            });
+
+                }
 
             }
 
