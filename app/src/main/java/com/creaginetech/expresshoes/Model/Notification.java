@@ -1,6 +1,6 @@
 package com.creaginetech.expresshoes.Model;
 
-public class Notification extends android.app.Notification {
+public class Notification {
     public String body;
     public String title;
 

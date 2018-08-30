@@ -28,7 +28,7 @@ public class Common {
     }
 
 
-    public static final String DELETE = "Delete";
+    public static final String DELETE = "DELETE";
     public static final String USER_KEY = "User";
     public static final String PASSWORD_KEY = "Password";
 
