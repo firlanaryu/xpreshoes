@@ -28,7 +28,7 @@ import java.security.Signature;
 
 import io.paperdb.Paper;
 
-public class SignInActivity extends AppCompatActivity {
+public class  SignInActivity extends AppCompatActivity {
 
     EditText edtPhone,edtPassword;
     Button btnSignIn;
@@ -84,7 +84,7 @@ public class SignInActivity extends AppCompatActivity {
                     mDialog.setMessage("Please waiting....");
                     mDialog.show();
 
-                    table_user.addValueEventListener(new ValueEventListener() {
+                    table_user.addListenerForSingleValueEvent(new ValueEventListener() {
 
 
                         @Override
@@ -102,6 +102,8 @@ public class SignInActivity extends AppCompatActivity {
                                         Common.currentUser = user;
                                         startActivity(homeIntent);
                                         finish();
+
+                                        table_user.removeEventListener(this);
                                     }
                                 } else {
                                     Toast.makeText(SignInActivity.this, "Wrong Password !!!", Toast.LENGTH_SHORT).show();

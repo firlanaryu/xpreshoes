@@ -38,10 +38,10 @@ dependencies {
 
     //Add Library
     implementation 'com.google.firebase:firebase-messaging:11.6.0' //firebase messaging
-
     implementation 'io.paperdb:paperdb:2.1' //help you write key-value to Android memory -cp 16
     implementation 'com.github.rey5137:material:1.2.4' //add material check box to your project cp-16
     implementation 'com.stepstone.apprating:app-rating:2.0.0' // add material rating
+    implementation 'com.github.d-max:spots-dialog:0.7@aar' //add SpotsDialog
     implementation 'com.google.firebase:firebase-core:11.6.0'
     implementation 'com.google.firebase:firebase-database:11.6.0'
     implementation 'info.hoang8f:fbutton:1.0.5'
