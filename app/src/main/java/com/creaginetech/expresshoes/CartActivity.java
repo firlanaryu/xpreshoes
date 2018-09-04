@@ -1,5 +1,6 @@
 package com.creaginetech.expresshoes;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
@@ -44,6 +45,8 @@ import info.hoang8f.widget.FButton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CartActivity extends AppCompatActivity {
 
@@ -62,9 +65,23 @@ public class CartActivity extends AppCompatActivity {
 
     APIService mService;
 
+
+    //calligraphy
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Note: add this code before setContentView method
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/cf.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
         setContentView(R.layout.activity_cart);
 
         //Init Service

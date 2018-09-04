@@ -1,5 +1,6 @@
 package com.creaginetech.expresshoes;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -30,6 +31,9 @@ import com.stepstone.apprating.listener.RatingDialogListener;
 
 import java.util.Arrays;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 public class FoodDetailActivity extends AppCompatActivity implements RatingDialogListener{
 
     TextView food_name,food_price,food_description;
@@ -47,9 +51,24 @@ public class FoodDetailActivity extends AppCompatActivity implements RatingDialo
 
     Food currentFood;
 
+    //calligraphy
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Note: add this code before setContentView method
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/cf.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
+
         setContentView(R.layout.activity_food_detail);
 
         //Firebase

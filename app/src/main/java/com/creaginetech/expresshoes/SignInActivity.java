@@ -2,6 +2,7 @@ package com.creaginetech.expresshoes;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,8 @@ import com.rey.material.widget.CheckBox;
 import java.security.Signature;
 
 import io.paperdb.Paper;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class  SignInActivity extends AppCompatActivity {
 
@@ -38,9 +41,23 @@ public class  SignInActivity extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference table_user;
 
+
+    //calligraphy
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Note: add this code before setContentView method
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/cf.otf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
+
         setContentView(R.layout.activity_sign_in);
 
         edtPhone = (MaterialEditText)findViewById(R.id.edtPhone);
