@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,6 +59,8 @@ public class HomeActivity extends AppCompatActivity
 
     FirebaseRecyclerAdapter<Category,MenuViewHolder> adapter;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     boolean doubleBackToExitPressedOnce = false;
 
 
@@ -70,6 +73,37 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
+
+        //View - cp-28 (Refresh layout)
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(Common.isConnectedToInternet(getBaseContext())) //cp15 check intrnt
+                    loadMenu();
+                else {
+                    Toast.makeText(getBaseContext(), "Please Check your connection", Toast.LENGTH_SHORT).show(); //check internet connnection
+                    return;
+                }
+            }
+        });
+
+        //Default, load for first time
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if(Common.isConnectedToInternet(getBaseContext())) //cp15 check intrnt
+                    loadMenu();
+                else {
+                    Toast.makeText(getBaseContext(), "Please Check your connection", Toast.LENGTH_SHORT).show(); //check internet connnection
+                    return;
+                }
+            }
+        });
 
 
         //Init Firebase
@@ -114,12 +148,7 @@ public class HomeActivity extends AppCompatActivity
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
 
-        if(Common.isConnectedToInternet(this)) //cp15 check intrnt
-        loadMenu();
-        else {
-            Toast.makeText(this, "Please Check your connection", Toast.LENGTH_SHORT).show(); //check internet connnection
-            return;
-        }
+
 
         //to add your token when login app
         updateToken(FirebaseInstanceId.getInstance().getToken());
@@ -156,6 +185,7 @@ public class HomeActivity extends AppCompatActivity
             }
         };
         recycler_menu.setAdapter(adapter);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
